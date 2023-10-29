@@ -1,0 +1,40 @@
+name: APP CI/CD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+env:
+  DJANGO_SECRET_KEY: some-secret-key
+  DJANGO_DEBUG: True
+  DJANGO_ALLOWED_HOSTS: "*"
+  DJANGO_DB_ENGINE: django.db.backends.sqlite3
+  DJANGO_DB_NAME: db.sqlite3
+  DJANGO_DB_USER: ""
+  DJANGO_DB_PASSWORD: ""
+  DJANGO_DB_HOST: ""
+  DJANGO_DB_PORT: ""
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9"]
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Test
+        run: python manage.py test
