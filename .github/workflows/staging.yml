@@ -1,0 +1,56 @@
+name: Staging CI/CD
+
+on:
+  push:
+    branches: [ staging ]
+
+env:
+  DJANGO_SECRET_KEY: some-secret-key
+  DJANGO_DEBUG: True
+  DJANGO_ALLOWED_HOSTS: "*"
+  DJANGO_DB_ENGINE: django.db.backends.sqlite3
+  DJANGO_DB_NAME: db.sqlite3
+  DJANGO_DB_USER: ""
+  DJANGO_DB_PASSWORD: ""
+  DJANGO_DB_HOST: ""
+  DJANGO_DB_PORT: ""
+
+  SSH_CREDENTIAL: ${{ secrets.SSH_CREDENTIAL }}
+  SSH_USER: ${{ secrets.SSH_USER }}
+  SSH_HOST: ${{ secrets.SSH_HOST }}
+
+jobs:
+  # test:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       python-version: ["3.9"]
+    
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Set up Python ${{ matrix.python-version }}
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
+      
+  #     - name: Install Dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install -r requirements.txt
+      
+  #     - name: Run Test
+  #       run: python manage.py test
+  
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Credential
+        run: |
+          mkdir ~/.ssh
+          echo "${{ env.SSH_CREDENTIAL }}" > ~/.ssh/private.key
+          chmod 600 ~/.ssh/private.key
+      
+      - name: Deploy
+        run: ssh -o StrictHostKeyChecking=no -t -t -i ~/.ssh/private.key $SSH_USER@$SSH_HOST -p 22 sudo systemctl status sortia && exit
