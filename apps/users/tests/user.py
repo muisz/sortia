@@ -1,6 +1,6 @@
 from django.test import TestCase
 from faker import Faker
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ValidationError
 
 from apps.users.enums import RoleEnum
 from apps.users.models import User
@@ -149,3 +149,40 @@ class UserTestCase(TestCase):
         user.update_last_login()
 
         self.assertIsNotNone(user.last_login)
+
+    def test_change_password_method(self):
+        password = fake.password()
+        user = User.register_buyer(
+            name=fake.name(),
+            username=fake.user_name(),
+            email=fake.email(),
+            password=password,
+        )
+        new_password = fake.password()
+        user.change_password(password, new_password)
+
+        self.assertTrue(user.check_password(new_password))
+
+    @assert_raise_error(ValidationError({'password': messages.USER_OLD_PASSWORD_DID_NOT_MATCH}))
+    def test_change_password_method_raise_error(self):
+        user = User.register_buyer(
+            name=fake.name(),
+            username=fake.user_name(),
+            email=fake.email(),
+            password=fake.password(),
+        )
+        user.change_password('wrong-password', fake.password())
+
+    def test_set_new_password_method(self):
+        password = fake.password()
+        user = User.register_buyer(
+            name=fake.name(),
+            username=fake.user_name(),
+            email=fake.email(),
+            password=password,
+        )
+        new_password = fake.password()
+        user.set_new_password(new_password)
+
+        self.assertTrue(user.check_password(new_password))
+        self.assertIsNotNone(user.last_password_changed)

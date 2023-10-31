@@ -5,6 +5,8 @@ USER_EMAIL_NOT_FOUND = _("email not found.")
 USER_INVALID_PASSWORD = _("invalid password.")
 USER_REQUIRE_ACTIVATION = _("user not activated yet. Please activate your account.")
 USER_ACCOUNT_CREATED = _("account created. We have sent otp to your email to verify your account.")
+USER_OLD_PASSWORD_DID_NOT_MATCH = _("old password didn't match")
+USER_PASSWORD_CHANGED = _("password has been successfully changed!")
 
 USER_OTP_NOT_FOUND = _("otp not found.")
 USER_OTP_EXPIRED = _("otp expired. Please request the new otp.")

@@ -16,6 +16,7 @@ class User(AbstractUser):
     picture = models.ImageField(upload_to='users/', null=True, blank=True)
 
     role = models.CharField(max_length=1, choices=((enum.value, enum.name) for enum in RoleEnum))
+    last_password_changed = models.DateTimeField(null=True, blank=True)
 
     @property
     def name(self):
@@ -87,6 +88,16 @@ class User(AbstractUser):
     
     def activate(self):
         self.is_active = True
+        self.save()
+    
+    def change_password(self, old_password, new_password):
+        if not self.check_password(old_password):
+            raise ValidationError({'password': messages.USER_OLD_PASSWORD_DID_NOT_MATCH})
+        self.set_new_password(new_password)
+    
+    def set_new_password(self, new_password):
+        self.set_password(new_password)
+        self.last_password_changed = timezone.now()
         self.save()
 
 

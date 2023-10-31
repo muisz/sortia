@@ -57,3 +57,16 @@ class SendOTPSerializer(serializers.Serializer):
 class OTPSerializer(serializers.Serializer):
     code = serializers.CharField()
     identifier = serializers.CharField()
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField()
+    new_password = serializers.CharField()
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class ForgotPasswordVerifySerializer(OTPSerializer):
+    new_password = serializers.CharField()
